@@ -1767,6 +1767,9 @@
       <trans-unit id="HYT_no_notifications" datatype="html">
         <source>No notifications</source>
       </trans-unit>
+      <trans-unit id="HYT_group_by" datatype="html">
+        <source>Allows group by?</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>

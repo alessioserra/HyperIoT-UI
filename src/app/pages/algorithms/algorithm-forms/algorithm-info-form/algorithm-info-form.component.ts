@@ -16,6 +16,9 @@ export class AlgorithmInfoFormComponent extends AlgorithmFormEntity implements A
 
   algorithm: Algorithm;
 
+  // TO DO: bool
+  checked: boolean;
+
   algorithmObserver: PartialObserver<Algorithm> = {
     next: res => {
       this.algorithm = res;
@@ -173,6 +176,10 @@ export class AlgorithmInfoFormComponent extends AlgorithmFormEntity implements A
   // AlgorithmDetailEntity interface
   save(successCallback, errorCallback) {
     this.saveAlgorithm(successCallback, errorCallback);
+  }
+
+  onClickCheckbox(event) {
+    this.checked = event;
   }
 
 }
