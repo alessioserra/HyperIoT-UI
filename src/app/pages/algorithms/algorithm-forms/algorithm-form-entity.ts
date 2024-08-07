@@ -1,4 +1,4 @@
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 
 import { Observable } from 'rxjs';
 
@@ -58,6 +58,9 @@ export abstract class AlgorithmFormEntity implements OnInit, AfterViewInit {
         this.entitiesService = injector.get(EntitiesService);
         this.dialog = injector.get(DialogService);
         this.form = this.formBuilder.group({});
+        // Added group by flag
+        let formControl = new FormControl(false);
+        this.form.addControl("group-by", formControl);
 		this.algorithmService = injector.get(AlgorithmService);
     }
 

@@ -25,6 +25,7 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatListModule} from '@angular/material/list';
 import {MatRippleModule} from '@angular/material/core';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,8 @@ import {MatRippleModule} from '@angular/material/core';
     MatInputModule,
     MatExpansionModule,
     DragDropModule,
-    MatListModule
+    MatListModule,
+    MatCheckboxModule
   ]
 })
 export class AlgorithmsModule { }

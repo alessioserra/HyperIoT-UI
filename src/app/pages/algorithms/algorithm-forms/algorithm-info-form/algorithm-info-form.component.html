@@ -40,9 +40,14 @@
         </div> <!-- Second Row -->
 
         <div class="form-group row">
-            <hyt-checkbox [(ngModel)]="checked" [ngModelOptions]="{standalone: true}" name="groupby" type="checkbox" id="groupby" (changeFn)="onClickCheckbox($event)" >
+            <mat-checkbox formControlName="group-by" 
+                [checked]= "this.checked"
+                type="checkbox" 
+                name="group-by" 
+                id="group-by" 
+                (change)="onClickCheckbox($event)" >
                 <ng-container i18n="@@HYT_group_by">Allows group by?</ng-container>
-            </hyt-checkbox>
+            </mat-checkbox>
         </div> <!-- Third row -->
 
     </form>

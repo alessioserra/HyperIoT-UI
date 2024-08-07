@@ -16,8 +16,7 @@ export class AlgorithmInfoFormComponent extends AlgorithmFormEntity implements A
 
   algorithm: Algorithm;
 
-  // TO DO: bool
-  checked: boolean;
+  checked: boolean; // group by
 
   algorithmObserver: PartialObserver<Algorithm> = {
     next: res => {
@@ -34,6 +33,9 @@ export class AlgorithmInfoFormComponent extends AlgorithmFormEntity implements A
     },
     'algorithm-description': {
       field: 'description'
+    },
+    'group-by': {
+      field: false
     }
   };
   showPreloader: boolean;
@@ -103,6 +105,9 @@ export class AlgorithmInfoFormComponent extends AlgorithmFormEntity implements A
     /******* END VALUE LOADING OVERLAY *******/
 
     this.entity = this.algorithm;
+    this.checked = JSON.parse(JSON.parse(this.entity.baseConfig).customConfig).groupBy; // load flag
+    this.form.get("group-by").setValue(JSON.parse(JSON.parse(this.entity.baseConfig).customConfig).groupBy);
+
     this.edit();
     this.loadingStatus = LoadingStatusEnum.Ready;
   }
@@ -119,6 +124,7 @@ export class AlgorithmInfoFormComponent extends AlgorithmFormEntity implements A
 
     let p = this.entity;
     const baseConfigObject = JSON.parse(p.baseConfig);
+    baseConfigObject.customConfig = JSON.stringify({ groupBy: this.checked }); // save flag
     p.name = this.form.get('algorithm-name').value;
     p.description = this.form.get('algorithm-description').value;
     p.baseConfig = JSON.stringify(baseConfigObject);
@@ -132,6 +138,8 @@ export class AlgorithmInfoFormComponent extends AlgorithmFormEntity implements A
       });
       this.loadingStatus = LoadingStatusEnum.Ready;
       successCallback && successCallback(res, wasNew);
+      // set checkbox value
+      this.form.get("group-by").setValue(JSON.parse(JSON.parse(this.entity.baseConfig).customConfig).groupBy);
     };
     if (p.id) {
       this.algorithmsService.updateAlgorithm(p).subscribe(responseHandler, (err) => {
@@ -179,7 +187,7 @@ export class AlgorithmInfoFormComponent extends AlgorithmFormEntity implements A
   }
 
   onClickCheckbox(event) {
-    this.checked = event;
+    this.checked = event.checked;
   }
 
 }
