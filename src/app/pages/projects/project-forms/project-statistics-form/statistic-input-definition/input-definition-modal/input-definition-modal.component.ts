@@ -51,6 +51,7 @@ export class InputDefinitionModalComponent implements OnInit {
 
   panelOpenState: boolean;
   searchText: string;
+  groupByValue: boolean = false;
 
   constructor(
     private dialogRef: DialogRef<any>,
@@ -64,6 +65,8 @@ export class InputDefinitionModalComponent implements OnInit {
   ngOnInit(): void {
     this.algorithm = this.data.algorithm;
     this.algorithmBaseConfig = JSON.parse(this.data.algorithm.baseConfig);
+    // groupBy fields or not
+    this.checkCustomConfig(this.algorithmBaseConfig)
     this.inputArray = this.algorithmBaseConfig.input;
     // deep copy of available packet fields
     this.hPacketFieldList = [...this.data.hPacketFieldList];
@@ -197,6 +200,16 @@ export class InputDefinitionModalComponent implements OnInit {
     
   }
   
+  /**
+    * This method is used to check if groupBy in customConfig is set to TRUE/FALSE
+    * @param algorithmBaseConfig 
+  */
+  checkCustomConfig(algorithmBaseConfig: AlgorithmConfig) {
+    const customConfig = JSON.parse(algorithmBaseConfig.customConfig);   
+    if (customConfig != null ) this.groupByValue = customConfig.groupBy;
+    else this.groupByValue = false;
+  }
+
   close() {
     this.dialogRef.close();
   }
