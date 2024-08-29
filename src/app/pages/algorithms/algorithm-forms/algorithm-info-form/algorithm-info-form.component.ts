@@ -105,8 +105,14 @@ export class AlgorithmInfoFormComponent extends AlgorithmFormEntity implements A
     /******* END VALUE LOADING OVERLAY *******/
 
     this.entity = this.algorithm;
-    this.checked = JSON.parse(JSON.parse(this.entity.baseConfig).customConfig).groupBy; // load flag
-    this.form.get("group-by").setValue(JSON.parse(JSON.parse(this.entity.baseConfig).customConfig).groupBy);
+    try { // load flag
+      this.checked = JSON.parse(JSON.parse(this.entity.baseConfig).customConfig).groupBy; 
+      this.form.get("group-by").setValue(JSON.parse(JSON.parse(this.entity.baseConfig).customConfig).groupBy);    
+    }
+    catch { 
+      this.checked = false; 
+      this.form.get("group-by").setValue(false);    
+    }
 
     this.edit();
     this.loadingStatus = LoadingStatusEnum.Ready;
