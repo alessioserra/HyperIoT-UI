@@ -1440,6 +1440,9 @@
       <trans-unit id="HYT_aliases_description" datatype="html">
         <source>Enter an alternate name to be displayed in the widget. In case the alias is empty the field name will be displayed</source>
       </trans-unit>
+      <trans-unit id="HYT_groupby_description" datatype="html">
+        <source>Allows you to group the chosen statistic by 1/n fields. It is possible to define the grouping fields within the project wizard</source>
+      </trans-unit>
       <trans-unit id="HYT_toolbar_full_screen" datatype="html">
         <source>Full Screen</source>
       </trans-unit>
