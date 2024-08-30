@@ -2360,8 +2360,8 @@
         <target>Nessuna notifica</target>
       </trans-unit>
       <trans-unit id="HYT_group_by" datatype="html">
-        <source>Allows group by?</source>
-        <target>Permetti raggruppamenti?</target>
+        <source>Allows group by</source>
+        <target>Permetti raggruppamenti</target>
       </trans-unit>
     </body>
   </file>
