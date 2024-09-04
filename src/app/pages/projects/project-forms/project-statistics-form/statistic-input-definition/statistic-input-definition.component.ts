@@ -37,13 +37,17 @@ export class StatisticInputDefinitionComponent implements OnInit {
   packetOptions: SelectOption[] = [];
   statisticInputForms: StatisticInputForm[] = [];
 
-  private originalFormsValues = '{"packet":"","mappedInputList":""}';
+  private originalFormsValues = '{"packet":"","mappedInputList":"","groupBy":""}';
 
   /**
    * Updating is true when the rule-definition is loaded. It is used to avoid expressionchangedafterviewchecked (isDirty)
    * TODO remove aftersetRuleDefinition() rework.
    */
   updating = false;
+
+  number_field_selected = 0;
+  groupByAlgorithm : boolean = true;
+  fieldsList : FieldList[] = [];
 
   constructor(
     private hPacketsService: HpacketsService,
@@ -154,7 +158,7 @@ export class StatisticInputDefinitionComponent implements OnInit {
     return this.statisticInputForms[i].form.get("mappedInputList").valid;
   }
 
-  openInputFieldsModal(i: number) {
+  loadInputFields(i: number) {
     const leafFieldList: HPacketField[] =
       this.statisticInputForms[i].leafFieldList;
     const mappedInputList =
@@ -165,26 +169,14 @@ export class StatisticInputDefinitionComponent implements OnInit {
       algorithm: this.algorithm,
       mappedInputList,
     };
-    const scrollStrategy = this.scrollStrategyOptions.noop(); // TODO passing noop scrollstrategy because of drag-drop scroll issue. Should be fixed in agular 16
-    const modalRef = this.dialogService.open(InputDefinitionModalComponent, { data, width: '800px', scrollStrategy });
-    modalRef.dialogRef.afterClosed().subscribe(
-      (res) => {
-        if (!res) {
-          return;
-        }
-        const mappedInputListResponse = res.data.mappedInputList;
-        this.config.input[i] = {
-          packetId: currentPacketId,
-          mappedInputList: mappedInputListResponse,
-        };
-        const mappedInputListFormControl =
-          this.statisticInputForms[i].form.get("mappedInputList");
-        mappedInputListFormControl.setValue(
-          JSON.stringify(mappedInputListResponse)
-        );
-      },
-      (err) => {}
-    );
+
+    this.populateFieldsList(data.hPacketFieldList);
+  }
+
+  populateFieldsList(data: HPacketField[]){
+    data.forEach(el => {
+      this.fieldsList.push({'field': el, 'label': el.name})
+    });
   }
 
   originalValueUpdate() {
@@ -212,7 +204,14 @@ export class StatisticInputDefinitionComponent implements OnInit {
       if (mappedInputList) {
         mappedInputList.setValue("");
       }
-    });
+
+      // update fields 
+      this.loadInputFields(index);
+    });    
+  }
+
+  groupByChanged(event, index) {
+    this.number_field_selected = event.value.length;    
   }
 
   removeStatisticInput(index) {
@@ -227,7 +226,7 @@ export class StatisticInputDefinitionComponent implements OnInit {
         leafFieldList: [],
       },
     ];
-    this.originalFormsValues = '{"packet":"","mappedInputList":""}';
+    this.originalFormsValues = '{"packet":"","mappedInputList":"", "groupBy":""}';
   }
 
   setInputConfigDefinition(input: HProjectAlgorithmInputField[]): void {

@@ -95,7 +95,6 @@ export abstract class ProjectFormEntity implements OnInit, AfterViewInit {
     }
 
     edit(entity?: any, readyCallback?) {
-      console.log('EDIT', entity)
         if (entity) {
             this.entity = { ...entity };
         }

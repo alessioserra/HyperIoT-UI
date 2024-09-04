@@ -1,6 +1,6 @@
 <div class="row statisticInputDefinition">
 
-    <div class="col-12 row-icon-hyt_plusC">
+    <div class="col-12 row-icon-hyt_plusC" *ngIf="!groupByAlgorithm">
         <span class="add-statistic-input hyt-icon icon-hyt_plusC" (click)="addStatisticInput()"></span>
     </div>
 
@@ -8,10 +8,17 @@
         <form [formGroup]="statisticInputForm.form" autocomplete="on">
             <div class="form-group row">
 
-                <div class="container-first-form-field col-5">
+                <div class="container-first-form-field col-6">
                     <hyt-select [form]="statisticInputForm.form" [options]="packetOptions" formControlName="packet" name="packet"
                         [isRequired]="true" i18n-label="@@HYT_packet" label="Packet" (changeFn)="packetChanged($event.value, i)">
                     </hyt-select>
+                </div>
+
+                <div id="algAndPackBefore" *ngIf="!canBindInputFields(statisticInputForm.leafFieldList)" class="col-6">
+                    <p i18n="@@HYT_select_algorithm_packet_before">Select algorithm and packet before</p>
+                </div>
+                <div id="algAndPackBefore_selected" *ngIf="canBindInputFields(statisticInputForm.leafFieldList)" class="col-6">
+                    <p>Packet selected, complete other fields</p>
                 </div>
 
                 <div class="col-3 container-form-field hidden-form-value">
@@ -19,16 +26,34 @@
                     </hyt-input-text>
                 </div>
 
-                <div id="algAndPackBefore" *ngIf="!canBindInputFields(statisticInputForm.leafFieldList)" class="col-5">
-                    <p i18n="@@HYT_select_algorithm_packet_before">Select algorithm and packet before</p>
+                <!-- GroupBy -->
+                <div class="container-first-form-field col-6">
+                    <hyt-select
+                    *ngIf="groupByAlgorithm && fieldsList.length > 0"
+                    [label]="'GroupBy'"
+                    name="groupBy"
+                    [options]="fieldsList"
+                    [isMultiple]="true"
+                    [isSearchable]="true"
+                    [changePositionStrategy]="true"
+                    (changeFn)="groupByChanged($event, i)"
+                    >
+                    </hyt-select>
                 </div>
 
-                <div id="container-bind-input" *ngIf="canBindInputFields(statisticInputForm.leafFieldList)" class="col-5">
+                <div id="groupBySelectLabel" class="col-6" *ngIf="groupByAlgorithm && fieldsList.length > 0">
+                    <p>Selected {{number_field_selected}} items</p>
+                </div>
+                <!-- fine GROUPBY-->
+
+                <!-- non più -->
+                <!-- <div id="container-bind-input" *ngIf="canBindInputFields(statisticInputForm.leafFieldList)" class="col-5">
                     <hyt-button [color]="'hyt-base-total-green'" (clickFn)="openInputFieldsModal(i)" >
                         <ng-container *ngIf="!inputHaveBeenBounded(i)" i18n="@@HYT_bind_input_fields">Bind input fields</ng-container>
                         <ng-container *ngIf="inputHaveBeenBounded(i)" i18n="@@HYT_input_binding_done">Input binding done</ng-container>
                     </hyt-button>
                 </div>
+                -->
 
                 <div class="container-delete-statistic-input col-2">
 

@@ -45,6 +45,36 @@
 
                 }
 
+                #algAndPackBefore_selected {
+                    display: flex;
+                    flex-direction: revert;
+                    align-items: center;
+                    justify-content: flex-start;
+
+                    p {
+                        margin-bottom: 0px;
+                        color: black;
+                    }
+
+                }
+
+                .groupBySelect {
+                    width: 100% !important;
+                }
+
+                #groupBySelectLabel {
+                    display: flex;
+                    flex-direction: revert;
+                    align-items: center;
+                    justify-content: flex-start;
+
+                    p {
+                        margin-bottom: 0px;
+                        color: black;
+                    }
+
+                }
+
                 #container-bind-input {
                     display: flex;
                     flex-direction: revert;
