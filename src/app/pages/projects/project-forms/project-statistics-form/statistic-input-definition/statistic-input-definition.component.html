@@ -29,6 +29,8 @@
                 <!-- GroupBy -->
                 <div class="container-first-form-field col-6">
                     <hyt-select
+                    [form]="statisticInputForm.form"
+                    formControlName="groupBy"
                     *ngIf="groupByAlgorithm && fieldsList.length > 0"
                     [label]="'GroupBy'"
                     name="groupBy"
@@ -36,6 +38,7 @@
                     [isMultiple]="true"
                     [isSearchable]="true"
                     [changePositionStrategy]="true"
+                    [isRequired]="true"
                     (changeFn)="groupByChanged($event, i)"
                     >
                     </hyt-select>
@@ -46,20 +49,26 @@
                 </div>
                 <!-- fine GROUPBY-->
 
-                <!-- non più -->
-                <!-- <div id="container-bind-input" *ngIf="canBindInputFields(statisticInputForm.leafFieldList)" class="col-5">
-                    <hyt-button [color]="'hyt-base-total-green'" (clickFn)="openInputFieldsModal(i)" >
-                        <ng-container *ngIf="!inputHaveBeenBounded(i)" i18n="@@HYT_bind_input_fields">Bind input fields</ng-container>
-                        <ng-container *ngIf="inputHaveBeenBounded(i)" i18n="@@HYT_input_binding_done">Input binding done</ng-container>
-                    </hyt-button>
-                </div>
-                -->
+                <!-- Input list field -->
+                <ng-container *ngIf="groupByAlgorithm && fieldsList.length > 0">
+                    <div *ngFor="let input of inputList; let ii = index" class="container-first-form-field col-6">
+                        <hyt-select
+                        [form]="statisticInputForm.form"
+                        formControlName="{{input.label}}"
+                        [label]="input.label"
+                        name="{{input.label}}"
+                        [options]="fieldsInputList"
+                        [isRequired]="true"
+                        (changeFn)="inputChanged($event, ii)"
+                        >
+                        </hyt-select>
+                    </div>
+                </ng-container>
 
+                 <!-- Remove packet -->
                 <div class="container-delete-statistic-input col-2">
-
                     <span *ngIf="i!=0" class="hyt-icon icon-hyt_cancel" (click)="removeStatisticInput(i)"></span>
-
-                </div> <!-- Remove packet -->
+                </div>
 
             </div>
         </form>

@@ -47,7 +47,9 @@ export class StatisticInputDefinitionComponent implements OnInit {
 
   number_field_selected = 0;
   groupByAlgorithm : boolean = true;
-  fieldsList : FieldList[] = [];
+  fieldsList : SelectOption[] = [];
+  fieldsInputList : SelectOption[] = [];
+  inputList: any[] = [];
 
   constructor(
     private hPacketsService: HpacketsService,
@@ -170,12 +172,24 @@ export class StatisticInputDefinitionComponent implements OnInit {
       mappedInputList,
     };
 
+    this.populateInputList(data.algorithm);
     this.populateFieldsList(data.hPacketFieldList);
   }
 
   populateFieldsList(data: HPacketField[]){
+    this.fieldsList = [];
     data.forEach(el => {
-      this.fieldsList.push({'field': el, 'label': el.name})
+      this.fieldsList.push({'value': el, 'label': el.name, 'disabled':false});
+      this.fieldsInputList.push({'value': el, 'label': el.name, 'disabled':false});
+    });
+  }
+
+  populateInputList(algorithm){
+    this.inputList = [];
+    let algorithmBaseConfig = JSON.parse(algorithm.baseConfig);
+    let inputs = algorithmBaseConfig.input;
+    inputs.forEach(el => {
+      this.inputList.push({'value': el, 'label': el.name})
     });
   }
 
@@ -191,7 +205,7 @@ export class StatisticInputDefinitionComponent implements OnInit {
     return currentValue;
   }
 
-  packetChanged(event, index) {
+  packetChanged(event: any, index: number) {
     this.loadHPackets().then((packets) => {
       this.selectedPacketId = event;
       this.statisticInputForms[index].leafFieldList = this.buildLeafFieldList(
@@ -210,11 +224,18 @@ export class StatisticInputDefinitionComponent implements OnInit {
     });    
   }
 
-  groupByChanged(event, index) {
+  groupByChanged(event: any, index: number) {
     this.number_field_selected = event.value.length;    
   }
 
-  removeStatisticInput(index) {
+  inputChanged(event: any, index: number) {
+    const selectedValue = event.value;
+    this.fieldsInputList.forEach(option => {
+      option.disabled = (option.value === selectedValue);
+    });
+  }
+
+  removeStatisticInput(index: number) {
     this.statisticInputForms.splice(index, 1);
     this.config.input.splice(index, 1);
   }
