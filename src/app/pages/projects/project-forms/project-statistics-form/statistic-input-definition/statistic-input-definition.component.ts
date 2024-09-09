@@ -47,8 +47,8 @@ export class StatisticInputDefinitionComponent implements OnInit {
 
   number_field_selected = 0;
   groupByAlgorithm : boolean = true;
-  fieldsList : SelectOption[] = [];
-  fieldsInputList : SelectOption[] = [];
+  fieldsList : SelectOption[] = []; // multi-select for GroupBy
+  fieldsInputList : SelectOption[] = []; // solo-select for other inputs
   inputList: any[] = [];
 
   constructor(
@@ -160,6 +160,9 @@ export class StatisticInputDefinitionComponent implements OnInit {
     return this.statisticInputForms[i].form.get("mappedInputList").valid;
   }
 
+  /**
+   * Load the input fields in a similar way to the previous modal
+   */
   loadInputFields(i: number) {
     const leafFieldList: HPacketField[] =
       this.statisticInputForms[i].leafFieldList;
@@ -176,6 +179,9 @@ export class StatisticInputDefinitionComponent implements OnInit {
     this.populateFieldsList(data.hPacketFieldList);
   }
 
+  /**
+  * Insert values options inside the 2 field arrays (1 for multi-select, 1 for solo-select)
+  */
   populateFieldsList(data: HPacketField[]){
     this.fieldsList = [];
     data.forEach(el => {
@@ -184,6 +190,9 @@ export class StatisticInputDefinitionComponent implements OnInit {
     });
   }
 
+  /**
+   * Load the inputs of the algorithm
+   */
   populateInputList(algorithm){
     this.inputList = [];
     let algorithmBaseConfig = JSON.parse(algorithm.baseConfig);
@@ -191,6 +200,48 @@ export class StatisticInputDefinitionComponent implements OnInit {
     inputs.forEach(el => {
       this.inputList.push({'value': el, 'label': el.name})
     });
+  }
+
+  /**
+  * Check the new value and do something:
+  * selected value -> disabled in other selects
+  * reset value -> enabled in other selects
+  */
+  inputChanged(form: any, formControlName: string) {
+    const selectedValues = Object.keys(form.controls)
+    .filter(key => form.get(key))
+    .map(key => form.get(key).value)
+    .filter(value => value !== '')
+
+    const selectedValuesIds = selectedValues
+      .filter(item => typeof item === 'object' && item !== null && 'id' in item)
+      .map(item => item.id);
+    
+    // RESET FIELD (id ==0)
+    if (form.get(formControlName).value) {
+      if (form.get(formControlName).value.id == 0){
+        form.get(formControlName).reset();
+        this.fieldsInputList.shift();
+      }
+    }
+
+    this.fieldsInputList.forEach(option => {
+      option.disabled = selectedValuesIds.includes(option.value.id);
+    });
+  }
+
+  /**
+  * Add or remove the RESET option if there is or not a value selected
+  */
+  checkOptions(form: any, formControlName: string){
+    // Add reset option
+    if (form.get(formControlName).value && form.get(formControlName).value.id > 0) this.fieldsInputList.unshift({'value': {id : 0, val : null}, 'label': 'RESET FIELD', 'disabled':false});
+
+    // Remove reset option
+    if (form.get(formControlName).value == null) {
+      const index = this.fieldsInputList.findIndex(field => field.value.id === 0);
+      if (index > -1) this.fieldsInputList.splice(index, 1);
+    }
   }
 
   originalValueUpdate() {
@@ -226,13 +277,6 @@ export class StatisticInputDefinitionComponent implements OnInit {
 
   groupByChanged(event: any, index: number) {
     this.number_field_selected = event.value.length;    
-  }
-
-  inputChanged(event: any, index: number) {
-    const selectedValue = event.value;
-    this.fieldsInputList.forEach(option => {
-      option.disabled = (option.value === selectedValue);
-    });
   }
 
   removeStatisticInput(index: number) {

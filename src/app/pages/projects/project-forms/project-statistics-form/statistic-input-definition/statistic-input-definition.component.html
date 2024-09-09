@@ -30,10 +30,10 @@
                 <div class="container-first-form-field col-6">
                     <hyt-select
                     [form]="statisticInputForm.form"
-                    formControlName="groupBy"
+                    formControlName="groupBy2"
                     *ngIf="groupByAlgorithm && fieldsList.length > 0"
                     [label]="'GroupBy'"
-                    name="groupBy"
+                    name="groupBy2"
                     [options]="fieldsList"
                     [isMultiple]="true"
                     [isSearchable]="true"
@@ -51,15 +51,16 @@
 
                 <!-- Input list field -->
                 <ng-container *ngIf="groupByAlgorithm && fieldsList.length > 0">
-                    <div *ngFor="let input of inputList; let ii = index" class="container-first-form-field col-6">
+                    <div *ngFor="let input of inputList; let ii = index" class="container-first-form-field col-6" (click)="this.checkOptions(statisticInputForm.form, input.label)">
                         <hyt-select
                         [form]="statisticInputForm.form"
                         formControlName="{{input.label}}"
                         [label]="input.label"
                         name="{{input.label}}"
                         [options]="fieldsInputList"
+                        [value]="input.value.id"
                         [isRequired]="true"
-                        (changeFn)="inputChanged($event, ii)"
+                        (changeFn)="inputChanged(statisticInputForm.form, input.label)"
                         >
                         </hyt-select>
                     </div>
