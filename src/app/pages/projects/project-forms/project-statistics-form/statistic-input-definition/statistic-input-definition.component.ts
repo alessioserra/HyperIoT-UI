@@ -228,6 +228,62 @@ export class StatisticInputDefinitionComponent implements OnInit {
     this.fieldsInputList.forEach(option => {
       option.disabled = selectedValuesIds.includes(option.value.id);
     });
+
+    this.updateMappedInputList(form, formControlName, true);
+  }
+
+  /*
+  * Method to update the mappedInputList hidden formControl  
+  */
+  updateMappedInputList(form: any, formControlName: string, isChanged: boolean) {
+    let jsonObject: any;
+    let temp: any = {};
+    let array = [];
+
+    // recupero valore form precedente
+    // 1) caso array vuoto
+    if (form.get("mappedInputList").value == "") jsonObject = JSON.parse("{}");
+
+    // 2) caso array esistente
+    else {
+      jsonObject = JSON.parse(form.get("mappedInputList").value);      
+      jsonObject.forEach(el =>{
+        array.push(el);
+      });
+    }
+
+    if (isChanged == true){
+      // devo recuperare INPUT
+      const foundItem = this.inputList.find(item => item.label === formControlName);
+
+      // devo recuperare packetFieldId
+      let packetFieldId : number;
+      if (form.get(formControlName).value != null) packetFieldId = form.get(formControlName).value.id;
+      else packetFieldId = 0;
+
+      // se NON sto resettando
+      if (packetFieldId != 0) {
+        // Elimino valore precedente (se esiste)
+        array = this.removeById(array, foundItem.value.id);
+
+        // Infine creo oggetto e lo aggiungo all'array
+        temp.packetFieldId = packetFieldId;
+        temp.algorithmInput = foundItem.value;
+        array.push(temp);
+      }
+
+      // se resetto:
+      if (packetFieldId == 0) array = this.removeById(array, foundItem.value.id);
+
+      // aggiorno valore del form mappedInputList
+      let mappedValuesArray = JSON.stringify(array);
+      form.get("mappedInputList").setValue(mappedValuesArray);
+    }
+  }
+
+  // Funzione per rimuovere l'oggetto con l'ID specificato
+  removeById(data: any, searchId: number): [] {
+    return data.filter(item => item.algorithmInput.id !== searchId);
   }
 
   /**
