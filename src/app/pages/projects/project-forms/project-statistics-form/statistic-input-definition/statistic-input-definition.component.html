@@ -50,7 +50,7 @@
                 <!-- fine GROUPBY-->
 
                 <!-- Input list field -->
-                <ng-container *ngIf="groupByAlgorithm && fieldsList.length > 0">
+                <ng-container *ngIf="fieldsList.length > 0">
                     <div *ngFor="let input of inputList; let ii = index" class="container-first-form-field col-6" (click)="this.checkOptions(statisticInputForm.form, input.label)">
                         <hyt-select
                         [form]="statisticInputForm.form"

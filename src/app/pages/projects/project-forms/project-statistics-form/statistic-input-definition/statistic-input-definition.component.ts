@@ -46,7 +46,7 @@ export class StatisticInputDefinitionComponent implements OnInit {
   updating = false;
 
   number_field_selected = 0;
-  groupByAlgorithm : boolean = true;
+  groupByAlgorithm : boolean = false;
   fieldsList : SelectOption[] = []; // multi-select for GroupBy
   fieldsInputList : SelectOption[] = []; // solo-select for other inputs
   inputList: any[] = [];
@@ -175,8 +175,20 @@ export class StatisticInputDefinitionComponent implements OnInit {
       mappedInputList,
     };
 
+    this.groupByAlgorithm = this.isGroupBy(data.algorithm); //groupBy flag or not?
     this.populateInputList(data.algorithm);
     this.populateFieldsList(data.hPacketFieldList);
+  }
+
+  /**
+  * Check if the algorithm has GROUPBY or NOT.
+  */
+  isGroupBy(algorithm: any) {
+    let parsedBaseConfig = JSON.parse(algorithm.baseConfig);
+    let customConfig = JSON.parse(parsedBaseConfig.customConfig);
+
+    if (customConfig != null) return customConfig.groupBy;
+    else return false;
   }
 
   /**
@@ -304,6 +316,13 @@ export class StatisticInputDefinitionComponent implements OnInit {
       const index = this.fieldsInputList.findIndex(field => field.value.id === 0);
       if (index > -1) this.fieldsInputList.splice(index, 1);
     }
+  }
+
+  /**
+  * Reset all selection. Called when algorithm changes
+  */
+  resetInputFields() {
+    //TODO
   }
 
   originalValueUpdate() {
