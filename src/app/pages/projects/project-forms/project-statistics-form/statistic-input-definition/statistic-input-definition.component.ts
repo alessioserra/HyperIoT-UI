@@ -207,7 +207,7 @@ export class StatisticInputDefinitionComponent implements OnInit {
   * selected value -> disabled in other selects
   * reset value -> enabled in other selects
   */
-  inputChanged(form: any, formControlName: string) {
+  inputChanged(form: any, formControlName: string, index: number) {
     const selectedValues = Object.keys(form.controls)
     .filter(key => form.get(key))
     .map(key => form.get(key).value)
@@ -229,13 +229,13 @@ export class StatisticInputDefinitionComponent implements OnInit {
       option.disabled = selectedValuesIds.includes(option.value.id);
     });
 
-    this.updateMappedInputList(form, formControlName, true);
+    this.updateMappedInputList(form, formControlName, index, true);
   }
 
   /*
   * Method to update the mappedInputList hidden formControl  
   */
-  updateMappedInputList(form: any, formControlName: string, isChanged: boolean) {
+  updateMappedInputList(form: any, formControlName: string, formIndex: number, isChanged: boolean) {
     let jsonObject: any;
     let temp: any = {};
     let array = [];
@@ -278,6 +278,12 @@ export class StatisticInputDefinitionComponent implements OnInit {
       // aggiorno valore del form mappedInputList
       let mappedValuesArray = JSON.stringify(array);
       form.get("mappedInputList").setValue(mappedValuesArray);
+
+      // aggiorno valore delle config
+      this.config.input[formIndex] = {
+        packetId: this.selectedPacketId,
+        mappedInputList: array,
+      };
     }
   }
 
