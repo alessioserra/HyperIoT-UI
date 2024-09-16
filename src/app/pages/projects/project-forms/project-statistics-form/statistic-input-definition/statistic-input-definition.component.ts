@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, Input,ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnChanges, SimpleChanges, Input,ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { DialogService, SelectOption } from 'components';
 import { Algorithm, HPacket, HPacketField, HpacketsService, HProject, HProjectAlgorithmConfig, HProjectAlgorithmInputField } from 'core';
@@ -61,6 +61,13 @@ export class StatisticInputDefinitionComponent implements OnInit {
 
   ngOnInit() {
     if (this.packetOptions.length === 0) this.loadHPackets();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['algorithm']) {
+      // reset all input fields when algorithm selected changes
+      this.resetInputFields();
+    }
   }
 
   addStatisticInput() {
@@ -322,7 +329,9 @@ export class StatisticInputDefinitionComponent implements OnInit {
   * Reset all selection. Called when algorithm changes
   */
   resetInputFields() {
-    //TODO
+    this.fieldsList = [];
+    this.fieldsInputList = [];
+    this.inputList = [];
   }
 
   originalValueUpdate() {
