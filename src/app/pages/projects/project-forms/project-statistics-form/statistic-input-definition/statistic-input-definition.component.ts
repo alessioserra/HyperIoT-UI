@@ -67,6 +67,24 @@ export class StatisticInputDefinitionComponent implements OnInit {
     if (changes['algorithm']) {
       // reset all input fields when algorithm selected changes
       this.resetInputFields();
+
+      // load config
+      let config = changes['config'].currentValue;
+      if (config && config.input.length > 0) {
+
+        // for each statistic form
+        config.input.forEach((el: any, index: number) => {          
+          this.packetChanged(el.packetId, index);
+          this.loadInputFields(index);
+          
+          // assing mappedInputList
+          console.info("ALEX_el", el);
+
+          //TO DO
+
+        });
+
+      }
     }
   }
 
@@ -360,7 +378,8 @@ export class StatisticInputDefinitionComponent implements OnInit {
         mappedInputList.setValue("");
       }
 
-      // update fields 
+      // reset and update fields
+      this.resetInputFields();
       this.loadInputFields(index);
     });    
   }
