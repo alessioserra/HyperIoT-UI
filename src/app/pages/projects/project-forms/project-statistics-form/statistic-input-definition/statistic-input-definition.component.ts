@@ -73,17 +73,22 @@ export class StatisticInputDefinitionComponent implements OnInit {
       if (config && config.input.length > 0) {
 
         // for each statistic form
-        config.input.forEach((el: any, index: number) => {          
-          this.packetChanged(el.packetId, index);
-          this.loadInputFields(index);
-          
-          // assing mappedInputList
-          console.info("ALEX_el", el);
+        config.input.forEach(async (el: any, index: number) => {          
+          // assign mappedInputList
+          this.statisticInputForms[index].form.get("mappedInputList").setValue(el.mappedInputList);
 
-          //TO DO
+          // update all other stuffs
+          await this.packetChanged(el.packetId, index);
+          this.cd.detectChanges();
 
+          // update EVERY mapped select 
+          el.mappedInputList.forEach(input => {
+            let form = this.statisticInputForms[index].form;
+            let formControlName = input.algorithmInput.name;
+            let selectedField = this.fieldsInputList.find(item => item.value.id === input.packetFieldId);
+            form.get(formControlName).setValue(selectedField.value);
+          });
         });
-
       }
     }
   }
@@ -189,6 +194,7 @@ export class StatisticInputDefinitionComponent implements OnInit {
    * Load the input fields in a similar way to the previous modal
    */
   loadInputFields(i: number) {
+    this.resetInputFields();
     const leafFieldList: HPacketField[] =
       this.statisticInputForms[i].leafFieldList;
     const mappedInputList =
@@ -364,8 +370,8 @@ export class StatisticInputDefinitionComponent implements OnInit {
     return currentValue;
   }
 
-  packetChanged(event: any, index: number) {
-    this.loadHPackets().then((packets) => {
+  packetChanged(event: any, index: number): Promise<void> {
+    return this.loadHPackets().then((packets) => {
       this.selectedPacketId = event;
       this.statisticInputForms[index].leafFieldList = this.buildLeafFieldList(
         packets.find((y) => y.id === event)
@@ -378,10 +384,8 @@ export class StatisticInputDefinitionComponent implements OnInit {
         mappedInputList.setValue("");
       }
 
-      // reset and update fields
-      this.resetInputFields();
       this.loadInputFields(index);
-    });    
+    });
   }
 
   groupByChanged(event: any, index: number) {

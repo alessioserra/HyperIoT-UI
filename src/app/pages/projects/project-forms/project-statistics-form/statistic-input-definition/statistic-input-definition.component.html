@@ -49,15 +49,15 @@
                 <!-- fine GROUPBY-->
 
                 <!-- Input list field -->
-                <ng-container *ngIf="fieldsList.length > 0">
+                <ng-container (hidden)="fieldsList.length > 0">
                     <div *ngFor="let input of inputList; let ii = index" class="container-first-form-field col-6" (click)="this.checkOptions(statisticInputForm.form, input.label)">
                         <hyt-select
                         [form]="statisticInputForm.form"
                         formControlName="{{input.label}}"
                         [label]="input.label"
                         name="{{input.label}}"
+                        id="{{input.label}}"
                         [options]="fieldsInputList"
-                        [value]="input.value.id"
                         [isRequired]="true"
                         (changeFn)="inputChanged(statisticInputForm.form, input.label, i)"
                         >
