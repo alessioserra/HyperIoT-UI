@@ -386,8 +386,50 @@ export class StatisticInputDefinitionComponent implements OnInit {
     });
   }
 
-  groupByChanged(event: any, index: number) {
-    this.number_field_selected = event.value.length;    
+  /*
+  *  Method used to update the multiselection in the GroupBy Select
+  */
+  groupByChanged(form: any, event: any, index: number) {
+    this.number_field_selected = event.value.length; // visualizzo numero di el selezionati
+    let jsonObject: any;
+    let array = [];
+
+    // recupero mappedInputList
+    // 1) caso array vuoto
+    if (form.get("mappedInputList").value == "") jsonObject = JSON.parse("{}");
+
+    // 2) caso array esistente
+    else {
+      jsonObject = JSON.parse(form.get("mappedInputList").value);      
+      jsonObject.forEach(el =>{
+        array.push(el);
+      });
+    }
+
+    // verifico esistenza groupBy (valore -1) all'interno della mappedInput List
+    let foundObject = array.find(obj => obj.packetFieldId === -1);
+
+    // Almeno 1 campo selezionato
+    if (event.value.length > 0){
+      if (foundObject) foundObject.algorithmInput = event.value; // devo sostituire
+      else array.push({ packetFieldId: -1, algorithmInput: event.value }); // devo aggiungere
+    }
+
+    // Devo svuotare array
+    else {
+      if (foundObject) foundObject.algorithmInput = [];
+      else array.push({ packetFieldId: -1, algorithmInput: [] });
+    }
+
+    // Infine aggiorno valori del form mappedInputList
+    let mappedValuesArray = JSON.stringify(array);
+    form.get("mappedInputList").setValue(mappedValuesArray);
+
+    // E aggiorno valore delle config
+    this.config.input[index] = {
+      packetId: this.selectedPacketId,
+      mappedInputList: array,
+    };
   }
 
   removeStatisticInput(index: number) {
