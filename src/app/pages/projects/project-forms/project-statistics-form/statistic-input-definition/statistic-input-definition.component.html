@@ -30,9 +30,9 @@
                 <div class="container-first-form-field col-6" *ngIf="groupByAlgorithm && fieldsList.length > 0">
                     <hyt-select
                     [form]="statisticInputForm.form"
-                    formControlName="groupBy2"
+                    formControlName="groupBy"
                     [label]="'GroupBy'"
-                    name="groupBy2"
+                    name="groupBy"
                     [options]="fieldsList"
                     [selected]="this.selectedGroupBy"
                     [isMultiple]="true"

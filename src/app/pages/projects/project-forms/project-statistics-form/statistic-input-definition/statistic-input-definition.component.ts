@@ -77,24 +77,25 @@ export class StatisticInputDefinitionComponent implements OnInit {
           // assign mappedInputList e packetId
           this.statisticInputForms[index].form.get("mappedInputList").setValue(el.mappedInputList);
           this.statisticInputForms[index].form.get("packet").setValue(el.packetId);
-
           this.selectedArray = el.mappedInputList;
 
           // update all other stuffs
           await this.packetChanged(el.packetId, index);
+          let form = this.statisticInputForms[index].form;
           this.cd.detectChanges();
 
           // update EVERY mapped select 
           el.mappedInputList.forEach(input => {
-            let form = this.statisticInputForms[index].form;
             let formControlName = input.algorithmInput.name;
             let selectedField = this.fieldsInputList.find(item => item.value.id === input.packetFieldId);
             form.get(formControlName).setValue(selectedField.value);
           });
 
-          this.selectedGroupBy = el.groupBy
-          this.statisticInputForms[index].form.get("groupBy2").setValue(this.selectedGroupBy);
-          this.cd.detectChanges();
+          // update GroupBy select
+          let groupById = el.groupBy.map(x => x.id);
+          let filteredFields = this.fieldsList.filter(field => groupById.includes(field.value.id));
+          form.get("groupBy").setValue(filteredFields.map(x => x.value));
+          this.number_field_selected = filteredFields.length;
         });
       }
     }
