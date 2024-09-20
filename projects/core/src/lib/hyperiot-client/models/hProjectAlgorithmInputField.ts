@@ -12,4 +12,5 @@ import { MappedInput } from './mappedInput';
 export interface HProjectAlgorithmInputField { 
     packetId?: number;
     mappedInputList?: Array<MappedInput>;
+    groupBy?: Array<any>;
 }

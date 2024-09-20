@@ -48,6 +48,8 @@ export class StatisticInputDefinitionComponent implements OnInit {
   fieldsList : SelectOption[] = []; // multi-select for GroupBy
   fieldsInputList : SelectOption[] = []; // solo-select for other inputs
   inputList: any[] = [];
+  selectedArray = [];
+  selectedGroupBy = [];
 
   constructor(
     private hPacketsService: HpacketsService,
@@ -72,8 +74,11 @@ export class StatisticInputDefinitionComponent implements OnInit {
 
         // for each statistic form
         config.input.forEach(async (el: any, index: number) => {          
-          // assign mappedInputList
+          // assign mappedInputList e packetId
           this.statisticInputForms[index].form.get("mappedInputList").setValue(el.mappedInputList);
+          this.statisticInputForms[index].form.get("packet").setValue(el.packetId);
+
+          this.selectedArray = el.mappedInputList;
 
           // update all other stuffs
           await this.packetChanged(el.packetId, index);
@@ -86,6 +91,10 @@ export class StatisticInputDefinitionComponent implements OnInit {
             let selectedField = this.fieldsInputList.find(item => item.value.id === input.packetFieldId);
             form.get(formControlName).setValue(selectedField.value);
           });
+
+          this.selectedGroupBy = el.groupBy
+          this.statisticInputForms[index].form.get("groupBy2").setValue(this.selectedGroupBy);
+          this.cd.detectChanges();
         });
       }
     }
@@ -320,10 +329,14 @@ export class StatisticInputDefinitionComponent implements OnInit {
       let mappedValuesArray = JSON.stringify(array);
       form.get("mappedInputList").setValue(mappedValuesArray);
 
+      // aggiorno valori
+      this.selectedArray = array;
+
       // aggiorno valore delle config
       this.config.input[formIndex] = {
         packetId: this.selectedPacketId,
         mappedInputList: array,
+        groupBy: this.selectedGroupBy
       };
     }
   }
@@ -391,44 +404,13 @@ export class StatisticInputDefinitionComponent implements OnInit {
   */
   groupByChanged(form: any, event: any, index: number) {
     this.number_field_selected = event.value.length; // visualizzo numero di el selezionati
-    let jsonObject: any;
-    let array = [];
 
-    // recupero mappedInputList
-    // 1) caso array vuoto
-    if (form.get("mappedInputList").value == "") jsonObject = JSON.parse("{}");
-
-    // 2) caso array esistente
-    else {
-      jsonObject = JSON.parse(form.get("mappedInputList").value);      
-      jsonObject.forEach(el =>{
-        array.push(el);
-      });
-    }
-
-    // verifico esistenza groupBy (valore -1) all'interno della mappedInput List
-    let foundObject = array.find(obj => obj.packetFieldId === -1);
-
-    // Almeno 1 campo selezionato
-    if (event.value.length > 0){
-      if (foundObject) foundObject.algorithmInput = event.value; // devo sostituire
-      else array.push({ packetFieldId: -1, algorithmInput: event.value }); // devo aggiungere
-    }
-
-    // Devo svuotare array
-    else {
-      if (foundObject) foundObject.algorithmInput = [];
-      else array.push({ packetFieldId: -1, algorithmInput: [] });
-    }
-
-    // Infine aggiorno valori del form mappedInputList
-    let mappedValuesArray = JSON.stringify(array);
-    form.get("mappedInputList").setValue(mappedValuesArray);
-
+    this.selectedGroupBy = event.value;
     // E aggiorno valore delle config
     this.config.input[index] = {
       packetId: this.selectedPacketId,
-      mappedInputList: array,
+      mappedInputList: this.selectedArray,
+      groupBy: this.selectedGroupBy
     };
   }
 
