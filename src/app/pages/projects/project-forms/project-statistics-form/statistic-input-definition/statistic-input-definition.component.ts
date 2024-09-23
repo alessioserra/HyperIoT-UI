@@ -1,7 +1,7 @@
 import { Component, OnInit, SimpleChanges, Input,ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { DialogService, SelectOption } from 'components';
-import { Algorithm, HPacket, HPacketField, HpacketsService, HProject, HProjectAlgorithmConfig, HProjectAlgorithmInputField } from 'core';
+import { Algorithm, HPacket, HPacketField, HpacketsService, HProject, HProjectAlgorithmConfig, HProjectAlgorithmInputField, Logger, LoggerService } from 'core';
 import { StatisticInputErrorComponent } from './statistic-input-error/statistic-input-error.component';
 import { ScrollStrategyOptions } from '@angular/cdk/overlay';
 
@@ -24,7 +24,9 @@ export class StatisticInputDefinitionComponent implements OnInit {
   @Input() project: HProject;
   @Input() algorithm: Algorithm;
   @Input() config: HProjectAlgorithmConfig;
-
+  
+  private logger: Logger;
+  
   allPackets: HPacket[] = [];
   selectedPacketId: number;
   /**
@@ -56,8 +58,12 @@ export class StatisticInputDefinitionComponent implements OnInit {
     public fb: FormBuilder,
     private dialogService: DialogService,
     private scrollStrategyOptions: ScrollStrategyOptions,
-    private cd: ChangeDetectorRef
-  ) {}
+    private cd: ChangeDetectorRef,
+    loggerService: LoggerService
+  ) {
+    this.logger = new Logger(loggerService);
+    this.logger.registerClass("StatisticInputDefinitionComponent");
+  }
 
   ngOnInit() {
     if (this.packetOptions.length === 0) this.loadHPackets();
@@ -65,6 +71,8 @@ export class StatisticInputDefinitionComponent implements OnInit {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['algorithm']) {
+      this.logger.info("Uploaded algorithm (EDIT)", changes['algorithm'].currentValue);
+
       // reset all input fields when algorithm selected changes
       this.resetInputFields();
 
@@ -73,16 +81,17 @@ export class StatisticInputDefinitionComponent implements OnInit {
       if (config && config.input.length > 0) {
 
         // for each statistic form
-        config.input.forEach(async (el: any, index: number) => {          
-          // assign mappedInputList e packetId
-          this.statisticInputForms[index].form.get("mappedInputList").setValue(el.mappedInputList);
-          this.statisticInputForms[index].form.get("packet").setValue(el.packetId);
-          this.selectedArray = el.mappedInputList;
+        config.input.forEach(async (el: any, index: number) => {    
 
           // update all other stuffs
+          this.statisticInputForms[index].form.get("packet").setValue(el.packetId);
           await this.packetChanged(el.packetId, index);
           let form = this.statisticInputForms[index].form;
           this.cd.detectChanges();
+
+          // assign mappedInputList e packetId
+          this.statisticInputForms[index].form.get("mappedInputList").setValue(el.mappedInputList);
+          this.selectedArray = el.mappedInputList; //for further upgrades
 
           // update EVERY mapped select 
           el.mappedInputList.forEach(input => {
@@ -96,6 +105,13 @@ export class StatisticInputDefinitionComponent implements OnInit {
           let filteredFields = this.fieldsList.filter(field => groupById.includes(field.value.id));
           form.get("groupBy").setValue(filteredFields.map(x => x.value));
           this.number_field_selected = filteredFields.length;
+
+          //update config values
+          this.config.input[index] = {
+            packetId: el.packetId,
+            mappedInputList: el.mappedInputList,
+            groupBy: el.groupBy
+          };
         });
       }
     }
@@ -217,6 +233,10 @@ export class StatisticInputDefinitionComponent implements OnInit {
     this.groupByAlgorithm = this.isGroupBy(data.algorithm); //groupBy flag or not?
     this.populateInputList(data.algorithm);
     this.populateFieldsList(data.hPacketFieldList);
+
+    this.logger.info("Load input fields", data);
+    this.logger.info("Available input", this.inputList);
+    this.logger.info("Available fields", this.fieldsList);
   }
 
   /**
